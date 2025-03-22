@@ -1,0 +1,106 @@
+table Calendario
+	lineageTag: cb52a69c-68b4-449e-933c-eef81a2bd82f
+
+	column Fecha
+		formatString: Short Date
+		lineageTag: a629f7e3-12c3-4f1a-9ae7-417e6ce00023
+		summarizeBy: none
+		sourceColumn: [Date]
+
+		variation Variation
+			isDefault
+			relationship: 20a081e9-87af-4916-b57e-a6052b773228
+			defaultHierarchy: LocalDateTable_ad72e917-91ee-4f69-873b-c8833a3e1c6c.'Date Hierarchy'
+
+		changedProperty = FormatString
+
+		annotation SummarizationSetBy = Automatic
+
+	column Año
+		formatString: 0
+		lineageTag: 27f9489b-3e02-4985-8888-64bad4edbc9c
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Año]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Trimestre
+		formatString: 0
+		lineageTag: 42b12d57-4f5d-46fa-8035-e7176416bcff
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Trimestre]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		formatString: 0
+		lineageTag: 332f6c2d-c53c-4cc5-b227-4b2680442b7e
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mes nombre'
+		lineageTag: f0dc5c79-d8fc-4a43-9851-af7a482fe791
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mes nombre]
+		sortByColumn: Mes
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Día de la semana número'
+		formatString: 0
+		lineageTag: 74349373-ee45-4d93-9556-5041a0bb2091
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Día de la semana número]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Día de la semana nombre'
+		lineageTag: c17cb35b-594e-4b49-9e17-7e32816f130d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Día de la semana nombre]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mes año'
+		formatString: 0
+		lineageTag: b4a3fe3e-f5de-4a38-9800-7a7ff6001ac1
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Mes año]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendario-9c2ce8c5-af54-45d8-b250-337e5bebc115 = calculated
+		mode: import
+		source =
+				
+				VAR _MinA_o = YEAR( MIN( Ordenes[Fecha orden] ) )
+				VAR _MaxA_o = YEAR( MAX( Ordenes[Fecha orden] ) )
+				RETURN
+				ADDCOLUMNS(
+				    FILTER(
+				        CALENDARAUTO(),
+				        YEAR( [Date] ) >= _MinA_o &&
+				        YEAR( [Date] ) <= _MaxA_o
+				    ),
+				    "Año", YEAR( [Date] ),
+				    "Trimestre", INT( FORMAT( [Date], "q" ) ),
+				    "Mes", MONTH( [Date] ),
+				    "Mes nombre", FORMAT( [Date], "mmmm" ),
+				    "Día de la semana número", WEEKDAY( [Date], 2 ),
+				    "Día de la semana nombre", FORMAT( [Date], "dddd" ),
+				    "Mes año", YEAR( [Date] ) * 100 + MONTH(  [Date] )
+				)
+
+	annotation PBI_Id = 1db9e4d9f8f64fb2868e07c7b79e19cd
+

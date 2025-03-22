@@ -1,0 +1,191 @@
+table Ordenes
+	lineageTag: ad539570-1e8a-41c1-aae6-324ae3bbee56
+
+	column 'Fecha orden'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6a00648e-fe32-4ea0-ae11-a4fdfaec0e3d
+		summarizeBy: none
+		sourceColumn: Fecha orden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'ID Orden'
+		dataType: string
+		lineageTag: f5e0bdf5-37b0-4f64-8300-da0c627fc2a4
+		summarizeBy: none
+		sourceColumn: ID Orden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo de envío'
+		dataType: string
+		lineageTag: 0e9ef62e-2f96-4019-950f-8292c0b72474
+		summarizeBy: none
+		sourceColumn: Tipo de envío
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Cliente'
+		dataType: string
+		lineageTag: e75bdf24-e402-444a-ae38-5d118b2ca06b
+		summarizeBy: none
+		sourceColumn: ID Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segmento
+		dataType: string
+		lineageTag: ad23e3be-4af0-4f25-b47a-84350a739851
+		summarizeBy: none
+		sourceColumn: Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Codigo postal'
+		dataType: string
+		lineageTag: 10d2982e-d810-43ed-9b08-45bc3d2b542d
+		summarizeBy: none
+		sourceColumn: Codigo postal
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Producto'
+		dataType: string
+		lineageTag: 9b1301a3-dfd6-445f-bd7a-d6e3136bc5b3
+		summarizeBy: none
+		sourceColumn: ID Producto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ventas
+		dataType: double
+		lineageTag: c94218ca-2c6f-4b93-bb08-a17ecdd09961
+		summarizeBy: sum
+		sourceColumn: Ventas
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Cantidad
+		dataType: int64
+		formatString: 0
+		lineageTag: dfec51bc-2316-4e23-8248-7a76f1f144a8
+		summarizeBy: sum
+		sourceColumn: Cantidad
+
+		annotation SummarizationSetBy = Automatic
+
+	column Descuento
+		dataType: double
+		lineageTag: 4642071a-c41d-425b-ada4-c1bb04e49e95
+		summarizeBy: sum
+		sourceColumn: Descuento
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Utilidad
+		dataType: double
+		lineageTag: 1ee1357c-bd4c-48e2-aea4-4cf82206386b
+		summarizeBy: sum
+		sourceColumn: Utilidad
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Ordenes con descuento' =
+			
+			IF(
+			    CALCULATE(
+			        SUM( Ordenes[Descuento] ),
+			        ALLEXCEPT( Ordenes, Ordenes[ID Orden] )
+			    ) = 0,
+			    "No",
+			    "Sí"
+			)
+		lineageTag: b900598c-837b-4e80-9b09-aefc90754939
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Es primera orden' =
+			
+			VAR _ClienteActual = Ordenes[ID Cliente]
+			RETURN
+			IF(
+			    Ordenes[Inicio mes] =
+			    CALCULATE(
+			        MIN( Ordenes[Inicio mes] ),
+			        ALL( Ordenes ),
+			        Ordenes[ID Cliente] = _ClienteActual
+			    ),
+			    "Clientes nuevos",
+			    "Clientes recurrentes"
+			)
+		lineageTag: 519a365a-85df-46cf-927d-47d8696c3126
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Inicio mes' =
+			
+			DATE( YEAR( Ordenes[Fecha orden] ), MONTH( Ordenes[Fecha orden] ), 1 )
+		formatString: Short Date
+		lineageTag: 70c03ba5-8bbd-4db5-b000-a4a7eae12c3f
+		summarizeBy: none
+
+		variation Variation
+			isDefault
+			relationship: d52c7555-70b5-4138-92df-5febeb749ba8
+			defaultHierarchy: LocalDateTable_ab4b30bb-7750-4629-95d2-6897e38c4715.'Date Hierarchy'
+
+		changedProperty = FormatString
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Utilidad por producto' =
+			
+			VAR _UtilidadProducto =
+			DIVIDE(
+			    Ordenes[Utilidad],
+			    Ordenes[Cantidad]
+			)
+			VAR _PrecioVenta =
+			DIVIDE(
+			    Ordenes[Ventas],
+			    Ordenes[Cantidad]
+			)
+			RETURN
+			DIVIDE(
+			    _UtilidadProducto,
+			    _PrecioVenta
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 9946a8d5-fd03-4c01-90fe-9700aa048b2b
+		summarizeBy: sum
+
+		changedProperty = FormatString
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Ordenes-d2590632-7022-4beb-86ef-c6d6a677b7fc = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("D:\Projects\CampBI\Dashboards projects\1 Unitated States E-Commerce records 2020\order_details.csv"),[Delimiter=",", Columns=11, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Order Date", type date}, {"Order ID", type text}, {"Ship Mode", type text}, {"Customer ID", type text}, {"Segment", type text}, {"Postal Code", type text}, {"Product ID", type text}, {"Profit", type number}, {"Discount", type number}, {"Quantity", Int64.Type}, {"Sales", type number}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Order Date", "Fecha orden"}, {"Order ID", "ID Orden"}, {"Ship Mode", "Tipo de envío"}, {"Customer ID", "ID Cliente"}, {"Segment", "Segmento"}, {"Postal Code", "Codigo postal"}, {"Product ID", "ID Producto"}, {"Sales", "Ventas"}, {"Quantity", "Cantidad"}, {"Discount", "Descuento"}, {"Profit", "Utilidad"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

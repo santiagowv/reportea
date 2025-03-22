@@ -1,0 +1,22 @@
+relationship 4970ad1e-8462-428d-ad53-322b9095e1f1
+	fromColumn: Ordenes.'ID Producto'
+	toColumn: Productos.'ID Producto'
+
+relationship d79182ab-86de-43ae-aaff-94f73a091a64
+	fromColumn: Ordenes.'Codigo postal'
+	toColumn: Ubicaciones.'Codigo postal'
+
+relationship 20a081e9-87af-4916-b57e-a6052b773228
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Calendario.Fecha
+	toColumn: LocalDateTable_ad72e917-91ee-4f69-873b-c8833a3e1c6c.Date
+
+relationship 9eef4e9d-4770-4ba2-baef-d7c43cb21879
+	fromColumn: Ordenes.'Fecha orden'
+	toColumn: Calendario.Fecha
+
+relationship d52c7555-70b5-4138-92df-5febeb749ba8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Ordenes.'Inicio mes'
+	toColumn: LocalDateTable_ab4b30bb-7750-4629-95d2-6897e38c4715.Date
+

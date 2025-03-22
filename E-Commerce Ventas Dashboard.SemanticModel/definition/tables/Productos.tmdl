@@ -1,0 +1,50 @@
+table Productos
+	lineageTag: 882614c8-3dd9-42b1-93ef-9d5bdc193ada
+
+	column 'ID Producto'
+		dataType: string
+		lineageTag: b7f53afb-1d39-4dc4-be60-f78c78602d23
+		summarizeBy: none
+		sourceColumn: ID Producto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Categoria
+		dataType: string
+		lineageTag: 132baaaa-bf65-4292-8f46-a4d35068ae14
+		summarizeBy: none
+		sourceColumn: Categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subcategoria
+		dataType: string
+		lineageTag: f9a9642b-8aca-4773-8070-7bce65a4de96
+		summarizeBy: none
+		sourceColumn: Subcategoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nombre de producto'
+		dataType: string
+		lineageTag: 7f3822f4-0df3-4b7b-9c77-32c2df4e3e93
+		summarizeBy: none
+		sourceColumn: Nombre de producto
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Productos-29cac6d9-3abc-44ad-b9ae-60e15cd9ef50 = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("D:\Projects\CampBI\Dashboards projects\1 Unitated States E-Commerce records 2020\product_information.csv"),[Delimiter=",", Columns=4, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Product ID", type text}, {"Category", type text}, {"Sub-Category", type text}, {"Product Name", type text}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Product ID", "ID Producto"}, {"Category", "Categoria"}, {"Sub-Category", "Subcategoria"}, {"Product Name", "Nombre de producto"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

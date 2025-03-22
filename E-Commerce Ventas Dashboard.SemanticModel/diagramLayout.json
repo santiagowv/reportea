@@ -1,0 +1,106 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 1095.2780821917806,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 437.07671232876714,
+            "y": 417.67534246575343
+          },
+          "nodeIndex": "Ordenes",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 829.84794520547939,
+            "y": 62.149315068493024
+          },
+          "nodeIndex": "Productos",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50.684931506849324,
+            "y": 46.57534246575343
+          },
+          "nodeIndex": "Ubicaciones",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1595.8684931506848,
+            "y": 247.94520547945206
+          },
+          "nodeIndex": "Medidas",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 424.94520547945194,
+            "y": 20.547945205479454
+          },
+          "nodeIndex": "Calendario",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1586.5,
+            "y": 0
+          },
+          "nodeIndex": "Primeros N días mes",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1992.1,
+            "y": 0
+          },
+          "nodeIndex": "State names to display",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 73,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

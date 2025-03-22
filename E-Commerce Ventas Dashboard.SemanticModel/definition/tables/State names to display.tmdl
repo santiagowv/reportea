@@ -1,0 +1,20 @@
+table 'State names to display'
+	lineageTag: e4a5e0fd-2115-4aa0-ac67-669bb7fa9a99
+
+	column Value
+		formatString: 0
+		lineageTag: 2e62975f-562f-4d36-ac76-ff8aaf261d83
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'State names to display-f2545274-0bbc-456b-a9bb-8bd3d9ea3cbb' = calculated
+		mode: import
+		source =
+				
+				GENERATESERIES( 1, 5, 1 )
+
+	annotation PBI_Id = 16decf50a75348b69504ae884673b12b
+

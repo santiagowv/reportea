@@ -1,0 +1,58 @@
+table Ubicaciones
+	lineageTag: d6e62fdf-d627-4a0e-9ff9-bdde87f3f760
+
+	column 'Codigo postal'
+		dataType: string
+		lineageTag: bf44d926-21e4-41a7-aad4-8ab18cd6332b
+		summarizeBy: none
+		sourceColumn: Codigo postal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: b9940868-f878-440f-8108-f16316de374d
+		summarizeBy: none
+		sourceColumn: Estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ciudad
+		dataType: string
+		lineageTag: a70935f9-b277-4e4a-a52a-6c5a8fb8cf1c
+		summarizeBy: none
+		sourceColumn: Ciudad
+
+		annotation SummarizationSetBy = Automatic
+
+	column País
+		dataType: string
+		lineageTag: ae0b474e-d010-4df9-bb33-a2e200b8c0a1
+		summarizeBy: none
+		sourceColumn: País
+
+		annotation SummarizationSetBy = Automatic
+
+	column Región
+		dataType: string
+		lineageTag: 029fc441-d777-4419-af18-9d5a0e6f2766
+		summarizeBy: none
+		sourceColumn: Región
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Ubicaciones-105412de-6a92-4819-805f-c9b803449c9c = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("D:\Projects\CampBI\Dashboards projects\1 Unitated States E-Commerce records 2020\location_information.csv"),[Delimiter=",", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Postal Code", type text}, {"State", type text}, {"City", type text}, {"Country", type text}, {"Region", type text}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Postal Code", "Codigo postal"}, {"State", "Estado"}, {"City", "Ciudad"}, {"Country", "País"}, {"Region", "Región"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

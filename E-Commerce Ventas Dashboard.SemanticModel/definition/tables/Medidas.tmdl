@@ -1,0 +1,344 @@
+table Medidas
+	lineageTag: ef7986ee-3a9d-4ccf-8cc9-9926c666cc7c
+
+	measure 'Total margen bruto' =
+			
+			SUM( Ordenes[Utilidad] )
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Overview
+		lineageTag: e99137d5-01d7-477c-9c97-94e72612f1e9
+
+		annotation PBI_FormatHint = {"currencyCulture":""}
+
+	measure 'Total ventas netas' =
+			
+			SUMX(
+			    Ordenes,
+			    Ordenes[Ventas] * Ordenes[Descuento]
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Overview
+		lineageTag: 11c9e9de-a0ee-4fe1-8124-1b22ac7d12e1
+
+		annotation PBI_FormatHint = {"currencyCulture":""}
+
+	measure 'Total gastos' =
+			
+			SUMX(
+			    Ordenes,
+			    ( Ordenes[Ventas] * Ordenes[Descuento] ) - Ordenes[Utilidad]
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Overview
+		lineageTag: acc0bd48-cda6-4c2d-8dbb-b160772f5451
+
+		changedProperty = FormatString
+
+		annotation PBI_FormatHint = {"currencyCulture":""}
+
+	measure 'Ticket promedio' =
+			
+			AVERAGEX(
+			    VALUES( Ordenes[ID Orden] ),
+			    [Total ventas netas]
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Overview
+		lineageTag: 0a85420e-7de8-42ea-9fde-7dd3e7d01c75
+
+		changedProperty = FormatString
+
+		annotation PBI_FormatHint = {"currencyCulture":""}
+
+	measure 'Utilidad media' =
+			
+			AVERAGEX(
+			    VALUES( Ordenes[ID Orden] ),
+			    [Total margen bruto]
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: Overview
+		lineageTag: 2ee4f186-16fb-4ead-86d6-08ace36d0d61
+
+		changedProperty = FormatString
+
+		annotation PBI_FormatHint = {"currencyCulture":""}
+
+	measure 'Margen bruto' =
+			
+			DIVIDE(
+			    [Total margen bruto],
+			    [Total ventas netas]
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Overview
+		lineageTag: 36d0ec91-ee0f-4d2d-bd97-9d818cdcfa1a
+
+		changedProperty = FormatString
+
+	measure 'Crecimiento mensual ventas' = ```
+			
+			VAR _MesActual = MAX( Calendario[Mes] )
+			VAR _A_oActual = MAX( Calendario[Año] )
+			VAR _OrdenesTabla =
+			SUMMARIZE(
+			    Ordenes,
+			    Calendario[Año],
+			    Calendario[Mes]
+			)
+			VAR _Calculos =
+			ADDCOLUMNS(
+			    _OrdenesTabla,
+			    "@Crecimiento mes",
+			    VAR _Ventas = [Total ventas netas]
+			    VAR _VentasMesPrevio =
+			        CALCULATE( 
+			            [Total ventas netas], 
+			            FILTER( 
+			                ALL( Calendario ), 
+			                Calendario[Año] = _A_oActual && Calendario[Mes] = _MesActual - 1
+			            )
+			        )
+			    RETURN
+			    DIVIDE( ( _ventas - _VentasMesPrevio ), _VentasMesPrevio, 0 )
+			        
+			)
+			RETURN
+			SUMX(
+			    _Calculos,
+			    IF(
+			        [@Crecimiento mes] <> 0,
+			        [@Crecimiento mes]
+			    )
+			)
+			```
+		formatString: 0%;-0%;0%
+		displayFolder: Overview
+		lineageTag: 4ae04f56-7e47-4ee3-a11e-d96e9be75dec
+
+		changedProperty = FormatString
+
+	measure 'Crecimiento promedio ventas mensuales' =
+			
+			AVERAGEX(
+			    VALUES( Calendario[Mes año] ),
+			    [Crecimiento mensual ventas]
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Overview
+		lineageTag: decb366e-4b0a-4a02-9c42-4518c6bc3dcd
+
+		changedProperty = FormatString
+
+	measure 'Top productos' = ```
+			
+			RANKX( ALL( Productos[Nombre de producto] ), [Total ventas netas], , DESC ) 
+			```
+		formatString: 0
+		displayFolder: Overview
+		lineageTag: 0067ebe0-3a4d-46c7-9640-4fde2812313c
+
+	measure 'Total ordenes' =
+			
+			COUNTROWS( VALUES(Ordenes[ID Orden] ) )
+		formatString: 0
+		displayFolder: Overview
+		lineageTag: bdb08555-49ca-40cf-8849-75f1cc99d404
+
+	measure 'Total descuentos' =
+			
+			SUM( Ordenes[Descuento] )
+		displayFolder: Overview
+		lineageTag: b7599cb9-086e-4d03-83fa-267d493c2787
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Promedio descuento por orden' =
+			
+			AVERAGEX(
+			    VALUES( Ordenes[ID Orden] ),
+			    [Total descuentos]
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Overview
+		lineageTag: 540c3276-0ce3-4995-ac10-ed23e1dde607
+
+		changedProperty = FormatString
+
+	measure 'Promedio ventas últimos 7 días' = ```
+			
+			VAR _DiaActual = MAX( Ordenes[Fecha orden] )
+			RETURN
+			CALCULATE(
+			    AVERAGEX(
+			        VALUES( Ordenes[Fecha orden] ),
+			        [Total ventas netas]
+			    ),
+			    FILTER(
+			        ALL( Ordenes ),
+			        Ordenes[Fecha orden] <= _DiaActual && Ordenes[Fecha orden] >= _DiaActual - 6 
+			    )
+			)
+			```
+		displayFolder: Overview
+		lineageTag: d863cad7-4f77-4164-a5e6-e4e98ce914fb
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total ventas netas primeros N días del mes' =
+			
+			VAR _TopDiasSelecionados =
+			TOPN(
+			    [Primeros N días mes seleccionados],
+			    VALUES( Calendario[Fecha] ),
+			    Calendario[Fecha], ASC
+			)
+			VAR _VentasMesPorDiasSeleccionados =
+			GENERATE(
+			    VALUES( Calendario[Mes año] ),
+			    ADDCOLUMNS(
+			        _TopDiasSelecionados,
+			        "@Ventas", [Total ventas netas]
+			    )
+			)
+			RETURN
+			SUMX(
+			    _VentasMesPorDiasSeleccionados,
+			    [@Ventas]
+			)
+		displayFolder: Overview
+		lineageTag: 9f8955b8-f997-4fed-8930-13fe98a6bd11
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Análisis pareto por estado' =
+			
+			VAR _TotalVentasAcumulado =
+			CALCULATE(
+			    [Total ventas netas],
+			    FILTER(
+			        ALL( Ubicaciones[Estado] ),
+			        [Ranking por estado] <= MAXX( VALUES( Ubicaciones[Estado] ), [Ranking por estado] )
+			    )
+			)
+			VAR _TotalVentasGeneral =
+			CALCULATE(
+			    [Total ventas netas],
+			    ALL( Ubicaciones )
+			)
+			RETURN
+			IF(
+			    [Total ventas netas] > 0,
+			    DIVIDE(
+			        _TotalVentasAcumulado,
+			        _TotalVentasGeneral
+			    )
+			)
+		formatString: #,0.00%;-#,0.00%;#,0.00%
+		displayFolder: Comportamiento compra
+		lineageTag: b0298394-0041-4591-8086-9c3847054998
+
+		changedProperty = FormatString
+
+	measure 'Ranking por estado' =
+			
+			RANKX( ALL( Ubicaciones[Estado] ), [Total ventas netas],,DESC)
+		formatString: 0
+		displayFolder: Comportamiento compra
+		lineageTag: a558d986-7634-44b3-beec-470e48bd6644
+
+	measure 'Promedio utilidad por producto' = ```
+			
+			AVERAGE( Ordenes[Utilidad por producto] )
+			
+			```
+		displayFolder: Comportamiento compra
+		lineageTag: 5e7d037f-e1d6-4bc3-81b8-f298643bbb1c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Top utilididad productos' = ```
+			
+			RANKX( ALL( Productos[Nombre de producto] ), [Promedio utilidad por producto], , ASC ) 
+			```
+		formatString: 0
+		displayFolder: Comportamiento compra
+		lineageTag: 0b35a282-3f42-4533-90b2-d454b25c8ccc
+
+	measure 'Tiempo promedio entre ordenes por categoría' = ```
+			
+			VAR _OrdenesPreviaYActual =
+			SUMMARIZE(
+			    Ordenes,
+			    Productos[Categoria],
+			    Ordenes[ID Orden],
+			    Ordenes[Fecha orden],
+			    "@Orden anterior",
+			    CALCULATE(
+			        MAX( Ordenes[Fecha orden] ),
+			        FILTER(
+			            ALL( Ordenes ),
+			            Ordenes[Fecha orden] < MAX( Ordenes[Fecha orden] )
+			        ),
+			        VALUES( Productos[Categoria] )
+			    )
+			)
+			VAR _DiferenciaEntreOrdenes=
+			ADDCOLUMNS(
+			    _OrdenesPreviaYActual,
+			    "@Días entre ordenes",
+			    DATEDIFF(  [@Orden anterior], Ordenes[Fecha orden], DAY )
+			)
+			RETURN  
+			AVERAGEX(
+			    _DiferenciaEntreOrdenes,
+			    [@Días entre ordenes]
+			)
+			```
+		formatString: #,0.00
+		displayFolder: Comportamiento compra
+		lineageTag: 0a77995b-57ed-482b-9630-c488722f54a5
+
+		changedProperty = FormatString
+
+	measure 'Selected states' =
+			
+			VAR _NumberToDisplay = SELECTEDVALUE('State names to display'[Value] )
+			VAR _SelectedStates = VALUES( Ubicaciones[Estado] )
+			VAR _TitlesToDiplay =
+			TOPN(
+			    _NumberToDisplay,
+			    _SelectedStates,
+			    [Total margen bruto],
+			    DESC
+			)
+			VAR _TextToDiplay =
+			CONCATENATEX(
+			    _TitlesToDiplay,
+			    Ubicaciones[Estado],
+			    ", "
+			)
+			VAR _Result =
+			IF(
+			    COUNTROWS(_SelectedStates) > _NumberToDisplay,
+			    _TextToDiplay & " and "& COUNTROWS(_SelectedStates) - _NumberToDisplay &" more...",
+			    _TextToDiplay
+			)
+			RETURN
+			_Result
+		lineageTag: e1907d69-f0b1-4368-aa2e-cbaae31e57fc
+
+	partition Medidas-8cab835a-7682-4c1f-a39e-c02b39dac385 = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

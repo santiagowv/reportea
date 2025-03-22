@@ -1,0 +1,26 @@
+table 'Primeros N días mes'
+	lineageTag: 94cef797-eb77-4e68-8f05-087f73f3f936
+
+	measure 'Primeros N días mes seleccionados' = SELECTEDVALUE('Primeros N días mes'[Primeros N días mes])
+		formatString: 0
+		lineageTag: c820c5ae-37a9-496e-bd61-b0f7f8547fea
+
+	column 'Primeros N días mes'
+		formatString: 0
+		lineageTag: be2e6755-c67b-48d8-8566-ce65dd14762d
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition 'Primeros N días mes-4ecc6f4e-9847-43d4-aecc-30697cb6863f' = calculated
+		mode: import
+		source = GENERATESERIES(0, 31, 1)
+
+	annotation PBI_Id = a8d7c424869b4a3a93844bc8e49f2a17
+
