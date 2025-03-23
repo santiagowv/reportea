@@ -211,6 +211,35 @@ table Medidas
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	measure 'Análisis pareto por estado' =
+			
+			VAR _TotalVentasAcumulado =
+			CALCULATE(
+			    [Total ventas netas],
+			    FILTER(
+			        ALL( Ubicaciones[Estado] ),
+			        [Ranking por estado] <= MAXX( VALUES( Ubicaciones[Estado] ), [Ranking por estado] )
+			    )
+			)
+			VAR _TotalVentasGeneral =
+			CALCULATE(
+			    [Total ventas netas],
+			    ALL( Ubicaciones )
+			)
+			RETURN
+			IF(
+			    [Total ventas netas] > 0,
+			    DIVIDE(
+			        _TotalVentasAcumulado,
+			        _TotalVentasGeneral
+			    )
+			)
+		formatString: #,0.00%;-#,0.00%;#,0.00%
+		displayFolder: Comportamiento compra
+		lineageTag: b0298394-0041-4591-8086-9c3847054998
+
+		changedProperty = FormatString
+
 	measure 'Ranking por estado' =
 			
 			RANKX( ALL( Ubicaciones[Estado] ), [Total ventas netas],,DESC)

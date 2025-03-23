@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.5.0/schema.json",
-  "name": "83764282675063aca0b0",
+  "name": "e487a32160e8068e8a06",
   "position": {
-    "x": 23.783783783783782,
-    "y": 180.62162162162161,
-    "z": 8000,
-    "height": 51.891891891891888,
-    "width": 124.32432432432432,
-    "tabOrder": 3000
+    "x": 291.89189189189187,
+    "y": 37.756756756756758,
+    "z": 9000,
+    "height": 51.2,
+    "width": 133,
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "card",
@@ -23,10 +23,10 @@
                       "Entity": "Medidas"
                     }
                   },
-                  "Property": "Total margen bruto"
+                  "Property": "Total gastos"
                 }
               },
-              "queryRef": "Medidas.Total utilidades"
+              "queryRef": "Medidas.Total gastos"
             }
           ]
         }
@@ -41,7 +41,7 @@
                     "Entity": "Medidas"
                   }
                 },
-                "Property": "Total margen bruto"
+                "Property": "Total gastos"
               }
             },
             "direction": "Descending"
@@ -112,7 +112,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Margen bruto'"
+                  "Value": "'Gastos'"
                 }
               }
             },
@@ -120,6 +120,18 @@
               "expr": {
                 "Literal": {
                   "Value": "11D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 8,
+                      "Percent": 0
+                    }
+                  }
                 }
               }
             }

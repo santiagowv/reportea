@@ -1311,6 +1311,22 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
+			    "medida.análisis_pareto_por_estado": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas",
+			          "ConceptualProperty": "Análisis pareto por estado"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "análisis pareto por estado": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
 			    "medida.ranking_por_estado": {
 			      "Definition": {
 			        "Binding": {
